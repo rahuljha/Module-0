@@ -22,13 +22,23 @@ class Module:
 
     def train(self):
         "Set the mode of this module and all descendent modules to `train`."
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError('Need to implement for Task 0.4')
+        self.mode = "train"
+        for m_obj in self._modules.values():
+            m_obj.train()
 
     def eval(self):
         "Set the mode of this module and all descendent modules to `eval`."
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError('Need to implement for Task 0.4')
+        self.mode = "eval"
+        for m_obj in self._modules.values():
+            m_obj.eval()
+
+    def recursively_add_parameters(self, parameters_dict, prefix):
+        # first get own parameters
+        for p_name, p_val in self._parameters.items():
+            parameters_dict[prefix + p_name] = p_val
+        # now iterate over the modules and get their parameters
+        for m_name, m_obj in self._modules.items():
+            m_obj.recursively_add_parameters(parameters_dict, prefix+m_name+".")
 
     def named_parameters(self):
         """
@@ -38,8 +48,9 @@ class Module:
         Returns:
             dict: Each name (key) and :class:`Parameter` (value) under this module.
         """
-        # TODO: Implement for Task 0.4.
-        raise NotImplementedError('Need to implement for Task 0.4')
+        parameters_dict = {}
+        self.recursively_add_parameters(parameters_dict, "")
+        return parameters_dict
 
     def parameters(self):
         return self.named_parameters().values()
